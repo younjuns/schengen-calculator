@@ -111,18 +111,3 @@ ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
 plt.xticks(rotation=45)
 plt.tight_layout()
 st.pyplot(fig)
-# Show unlock summary after plotting
-unlock_dates = [trip["exit"] + timedelta(days=180) for trip in trips]
-
-inflection_summary_data = []
-for date_point in unlock_dates:
-    row = df[df["date"] == date_point]
-    if not row.empty:
-        days_used = row["days_used"].values[0]
-        available = 90 - days_used
-        inflection_summary_data.append((date_point, available))
-
-if inflection_summary_data:
-    st.markdown("### 🟢 Additional days become available on:")
-    for d, a in inflection_summary_data:
-        st.markdown(f"- **{d.strftime('%d %b %Y')}** — {a} days available")
