@@ -8,18 +8,22 @@ from datetime import datetime, timedelta
 st.set_page_config(page_title="Schengen Visa Calculator", layout="wide")
 st.title("📅 Schengen Visa 90/180 Day Calculator")
 
-st.markdown("""
-Use this app to track your stay in the Schengen Area.
-Enter your **entry and exit dates**, and see a visual breakdown of your used days under the 90/180 rule.
-""")
+if 'trips' not in st.session_state:
+    st.session_state.trips = []
+
+trips = st.session_state.trips
+
+# Show intro text only before chart appears
+if not trips:
+    st.markdown("""
+    Use this app to track your stay in the Schengen Area.
+    Enter your **entry and exit dates**, and see a visual breakdown of your used days under the 90/180 rule.
+    """)
 
 # --- Input Section ---
 st.sidebar.header("🕴️ Add a trip")
 entry = st.sidebar.date_input("Entry date")
 exit = st.sidebar.date_input("Exit date")
-
-if 'trips' not in st.session_state:
-    st.session_state.trips = []
 
 if st.sidebar.button("Add Trip"):
     if entry <= exit:
