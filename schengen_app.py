@@ -27,7 +27,14 @@ if st.sidebar.button("Add Trip"):
 if st.sidebar.button("Clear Trips"):
     st.session_state.trips = []
 
-trips = st.session_state.trips
+# --- Display Added Trips ---
+if trips:
+    st.sidebar.markdown("### ✈️ Trips Added")
+    for i, trip in enumerate(trips):
+        st.sidebar.markdown(f"**{i+1}.** {trip['entry']} ➝ {trip['exit']}")
+        if st.sidebar.button(f"❌ Remove trip {i+1}", key=f"remove_{i}"):
+            st.session_state.trips.pop(i)
+            st.experimental_rerun()
 
 # --- Intro Text ---
 if not trips:
