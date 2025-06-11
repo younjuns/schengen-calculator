@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 from matplotlib.patches import Rectangle
+import matplotlib.dates as mdates
 
 st.set_page_config(page_title="Schengen Calculator", layout="wide")
 
@@ -66,8 +67,9 @@ if trips:
     ax.axhline(90, color="#FF006E", linestyle="--", linewidth=1.5, label="Límite de 90 días")
 
     for trip in trips:
-        x_start = trip["entry"]
-        width = (trip["exit"] - trip["entry"]).days + 1
+        x_start = mdates.date2num(trip["entry"])
+        x_end = mdates.date2num(trip["exit"])
+        width = x_end - x_start
         rect = Rectangle((x_start, 0), width, 90, facecolor="#FFD6A5", alpha=0.3)
         ax.add_patch(rect)
         ax.annotate(f'Entrada\n{trip["entry"].strftime("%d %b")}', xy=(trip["entry"], 0), xytext=(-10, 30),
