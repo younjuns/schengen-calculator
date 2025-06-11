@@ -63,30 +63,40 @@ if trips:
 
     # Create chart
     fig, ax = plt.subplots(figsize=(14, 5))
-    ax.plot(df["date"], df["days_used"], color="#3A86FF", linewidth=2.5, label="Días utilizados (últimos 180 días)")
-    ax.axhline(90, color="#FF006E", linestyle="--", linewidth=1.5, label="Límite de 90 días")
+    ax.plot(df["date"], df["days_used"], color="#00BFA6", linewidth=3, label="Days Used (last 180)")
+    ax.axhline(90, color="#FF1744", linestyle="--", linewidth=2, label="90-Day Limit")
 
     for trip in trips:
         x_start = mdates.date2num(trip["entry"])
         x_end = mdates.date2num(trip["exit"])
         width = x_end - x_start
-        rect = Rectangle((x_start, 0), width, 90, facecolor="#FFD6A5", alpha=0.3)
+        rect = Rectangle((x_start, 0), width, 90, facecolor="#FFECB3", alpha=0.4)
         ax.add_patch(rect)
         ax.annotate(f'Entrada\n{trip["entry"].strftime("%d %b")}', xy=(trip["entry"], 0), xytext=(-10, 30),
-                    textcoords="offset points", ha='center', fontsize=8, arrowprops=dict(arrowstyle="->"))
+                    textcoords="offset points", ha='center', fontsize=9, arrowprops=dict(arrowstyle="->", color="#00BFA6"))
         ax.annotate(f'Salida\n{trip["exit"].strftime("%d %b")}', xy=(trip["exit"], 0), xytext=(10, -35),
-                    textcoords="offset points", ha='center', fontsize=8, arrowprops=dict(arrowstyle="->"))
+                    textcoords="offset points", ha='center', fontsize=9, arrowprops=dict(arrowstyle="->", color="#FF1744"))
 
-    ax.set_title("🗓️ Días utilizados según la regla 90/180", fontsize=16, weight='bold')
-    ax.set_xlabel("Fecha")
-    ax.set_ylabel("Días utilizados")
-    ax.grid(True, linestyle="--", alpha=0.3)
+    # Highlight inflection points where available days increase
+    unlock_dates = [trip["exit"] + timedelta(days=180) for trip in trips]
+    for unlock in unlock_dates:
+        row = df[df["date"] == unlock]
+        if not row.empty:
+            used = row.iloc[0]["days_used"]
+            available = 90 - used
+            ax.annotate(f"{available} days\navailable",
+                        xy=(unlock, used), xytext=(0, 40), textcoords="offset points",
+                        ha='center', fontsize=9, bbox=dict(boxstyle="round,pad=0.3", fc="#C8E6C9", ec="#388E3C"))
+
+    ax.set_title("📈 Your Schengen 90/180 Usage", fontsize=18, weight='bold')
+    ax.set_xlabel("Date", fontsize=12)
+    ax.set_ylabel("Days Used", fontsize=12)
+    ax.grid(True, linestyle="--", alpha=0.25)
     ax.legend()
     fig.autofmt_xdate()
     st.pyplot(fig)
 
     # --- 🟢 Summary: When days become available ---
-    unlock_dates = [trip["exit"] + timedelta(days=180) for trip in trips]
     summary = []
     for unlock in unlock_dates:
         row = df[df["date"] == unlock]
