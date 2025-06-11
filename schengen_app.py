@@ -72,10 +72,13 @@ if trips:
         width = x_end - x_start
         rect = Rectangle((x_start, 0), width, 90, facecolor="#FFECB3", alpha=0.4)
         ax.add_patch(rect)
-        ax.annotate(f'Entrada\n{trip["entry"].strftime("%d %b")}', xy=(trip["entry"], 0), xytext=(-10, 30),
-                    textcoords="offset points", ha='center', fontsize=9, arrowprops=dict(arrowstyle="->", color="#00BFA6"))
-        ax.annotate(f'Salida\n{trip["exit"].strftime("%d %b")}', xy=(trip["exit"], 0), xytext=(10, -35),
-                    textcoords="offset points", ha='center', fontsize=9, arrowprops=dict(arrowstyle="->", color="#FF1744"))
+
+        # Annotate with days used during the trip
+        trip_length = (trip["exit"] - trip["entry"]).days + 1
+        center_date = trip["entry"] + timedelta(days=trip_length // 2)
+        ax.annotate(f"{trip_length} days used",
+                    xy=(center_date, 45), xytext=(0, -30), textcoords="offset points",
+                    ha='center', fontsize=9, bbox=dict(boxstyle="round,pad=0.3", fc="#FFF9C4", ec="#FBC02D"))
 
     # Highlight inflection points where available days increase
     unlock_dates = [trip["exit"] + timedelta(days=180) for trip in trips]
@@ -88,7 +91,7 @@ if trips:
                         xy=(unlock, used), xytext=(0, 40), textcoords="offset points",
                         ha='center', fontsize=9, bbox=dict(boxstyle="round,pad=0.3", fc="#C8E6C9", ec="#388E3C"))
 
-    ax.set_title("📈 Your Schengen 90/180 Usage", fontsize=18, weight='bold')
+    ax.set_title("Your Schengen 90/180 Usage", fontsize=18, weight='bold')
     ax.set_xlabel("Date", fontsize=12)
     ax.set_ylabel("Days Used", fontsize=12)
     ax.grid(True, linestyle="--", alpha=0.25)
