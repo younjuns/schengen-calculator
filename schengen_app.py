@@ -13,13 +13,6 @@ if 'trips' not in st.session_state:
 
 trips = st.session_state.trips
 
-# Show intro text only before chart appears
-if not trips:
-    st.markdown("""
-    Use this app to track your stay in the Schengen Area.
-    Enter your **entry and exit dates**, and see a visual breakdown of your used days under the 90/180 rule.
-    """)
-
 # --- Input Section ---
 st.sidebar.header("🕴️ Add a trip")
 entry = st.sidebar.date_input("Entry date")
@@ -36,7 +29,12 @@ if st.sidebar.button("Clear Trips"):
 
 trips = st.session_state.trips
 
+# --- Intro Text ---
 if not trips:
+    st.markdown("""
+    Use this app to track your stay in the Schengen Area.
+    Enter your **entry and exit dates**, and see a visual breakdown of your used days under the 90/180 rule.
+    """)
     st.info("Add some trips using the sidebar to see your chart.")
     st.stop()
 
